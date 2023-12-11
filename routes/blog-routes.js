@@ -5,7 +5,7 @@ const express = require("express");
 // const getById = require('../controllers/blog-controller.js');
 // const deleteBlog = require('../controllers/blog-controller.js');
 // const getByUserId = require('../controllers/blog-controller.js');
-const { getAllBlogs, addBlog, updateBlog, getById, deleteBlog, getByUserId } = require('../controllers/blog-controller.js');
+const { getAllBlogs, addBlog, updateBlog, getById, deleteBlog, getByUserId } = require('../controllers/blog-contoller.js');
 
 const blogRouter = express.Router();
 
