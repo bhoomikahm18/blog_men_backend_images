@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
-const Blog = require("../model/Blog");
-const User = require("../model/User");
 const path = require('path');
+const Blog = require("../model/Blog.js");
+//const User = require("../model/User.js");
+const User = require("../model/User.js");
+
+
 
 module.exports.getAllBlogs = async (req, res, next) => {
     let blogs;
@@ -16,15 +19,15 @@ module.exports.getAllBlogs = async (req, res, next) => {
     return res.status(200).json({ blogs });
 };
 
-module.exports.addBlog = async (req, res, next) => {
+module.exports.addBlog = async (req, res) => {
 
     const { title, description, userID } = req.body;
-    const { image } = req.files;
-
 
     if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).send('No files were uploaded.');
+        return res.status(404).json({ message: "Image Does not Exist" });
     }
+
+    const { image } = req.files;
 
     let uploadPath;
     let date = new Date()
@@ -37,19 +40,19 @@ module.exports.addBlog = async (req, res, next) => {
         date.getSeconds() +
         date.getMilliseconds() +
         '.jpg';
-    // uploadPath = __dirname + '/upload/' + newFileName;
-    uploadPath = path.join(__dirname, '..', '/upload', newFileName);
-    console.log(uploadPath);
 
-    let existingUser;
+    uploadPath = path.join(__dirname, '..', '/upload', newFileName);
+
+    let existingUser = null;
     try {
         existingUser = await User.findById(userID);
     } catch (err) {
         return console.log(err);
     }
     if (!existingUser) {
-        return res.status(400).json({ message: "Unable TO Find User By This ID" });
+        return res.status(403).json({ message: "Unable TO Find User By This ID" });
     }
+    console.log("Completed User Validation");
     const blog = new Blog({
         title,
         description,
@@ -58,7 +61,7 @@ module.exports.addBlog = async (req, res, next) => {
     });
     try {
         image.mv(uploadPath, (err) => {
-            if (err) return res.status(500).json({ msg: "Image could not be uploaded" });
+            if (err) return res.status(500).json({ message: "Backend: Image could not be uploaded" });
         });
         const session = await mongoose.startSession();
         session.startTransaction({ session });
