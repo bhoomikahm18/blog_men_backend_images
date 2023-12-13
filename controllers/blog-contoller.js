@@ -52,7 +52,6 @@ module.exports.addBlog = async (req, res) => {
     if (!existingUser) {
         return res.status(403).json({ message: "Unable TO Find User By This ID" });
     }
-    console.log("Completed User Validation");
     const blog = new Blog({
         title,
         description,
